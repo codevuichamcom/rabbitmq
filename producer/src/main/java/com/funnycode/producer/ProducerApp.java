@@ -1,6 +1,7 @@
 package com.funnycode.producer;
 
 import com.funnycode.common.Employee;
+import com.funnycode.common.Picture;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -9,6 +10,8 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 import java.time.LocalDate;
+import java.util.List;
+import java.util.concurrent.ThreadLocalRandom;
 
 @SpringBootApplication
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
@@ -16,13 +19,18 @@ import java.time.LocalDate;
 public class ProducerApp implements CommandLineRunner {
     EmployeeJsonProducer employeeJsonProducer;
     HumanResourceProducer humanResourceProducer;
+    PictureProducer pictureProducer;
+
+    private final List<String> SOURCES = List.of("mobile", "web");
+
+    private final List<String> TYPES = List.of("jpg", "png", "svg");
 
     public static void main(String[] args) {
         SpringApplication.run(ProducerApp.class, args);
     }
 
     @Override
-    public void run(String... args) throws Exception {
+    public void run(String... args) {
         //Send to employee queue
         for (int i = 0; i < 5; i++) {
             Employee e = Employee.builder()
@@ -33,7 +41,7 @@ public class ProducerApp implements CommandLineRunner {
             employeeJsonProducer.sendMessage(e);
         }
 
-        //Send to x.hr exchange
+        //Send to x.hr fanout exchange
         for (int i = 0; i < 5; i++) {
             Employee e = Employee.builder()
                     .employeeId("emp" + i)
@@ -41,6 +49,17 @@ public class ProducerApp implements CommandLineRunner {
                     .birthDate(LocalDate.now())
                     .build();
             humanResourceProducer.sendMessage(e);
+        }
+
+        //Send to x.picture direct exchange
+        for (int i = 0; i < 10; i++) {
+            Picture picture = Picture.builder()
+                    .name("Picture " + i)
+                    .size(ThreadLocalRandom.current().nextLong(1, 10001))
+                    .source(SOURCES.get(i % SOURCES.size()))
+                    .type(TYPES.get(i % TYPES.size()))
+                    .build();
+            pictureProducer.sendMessage(picture);
         }
     }
 }
