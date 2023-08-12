@@ -1,32 +1,11 @@
-package com.funnycode.producer.config;
+package com.funnycode.producer.config.rabbitmq;
 
 import org.springframework.amqp.core.*;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-public class RabbitMQConfig {
-
-    @Bean
-    public Queue fixedRateQueue() {
-        return new Queue("course.fixedrate");
-    }
-
-    @Bean
-    public Queue employeeQueue() {
-        return new Queue("course.employee");
-    }
-
-    @Bean
-    public Queue accountingQueue() {
-        return new Queue("q.hr.accounting");
-    }
-
-    @Bean
-    public Queue marketingQueue() {
-        return new Queue("q.hr.marketing");
-    }
-
+public class DirectExchangeConfig {
     @Bean
     public Queue pictureImageQueue() {
         return new Queue("q.picture.image");
@@ -38,23 +17,8 @@ public class RabbitMQConfig {
     }
 
     @Bean
-    public FanoutExchange fanoutExchange() {
-        return new FanoutExchange("x.hr");
-    }
-
-    @Bean
     public DirectExchange directExchange() {
         return new DirectExchange("x.picture");
-    }
-
-    @Bean
-    public Binding accountingBinding(Queue accountingQueue, FanoutExchange fanoutExchange) {
-        return BindingBuilder.bind(accountingQueue).to(fanoutExchange);
-    }
-
-    @Bean
-    public Binding marketingBinding(Queue marketingQueue, FanoutExchange fanoutExchange) {
-        return BindingBuilder.bind(marketingQueue).to(fanoutExchange);
     }
 
     @Bean

@@ -20,6 +20,7 @@ public class ProducerApp implements CommandLineRunner {
     EmployeeJsonProducer employeeJsonProducer;
     HumanResourceProducer humanResourceProducer;
     PictureProducer pictureProducer;
+    PictureTopicProducer pictureTopicProducer;
 
     private final List<String> SOURCES = List.of("mobile", "web");
 
@@ -60,6 +61,17 @@ public class ProducerApp implements CommandLineRunner {
                     .type(TYPES.get(i % TYPES.size()))
                     .build();
             pictureProducer.sendMessage(picture);
+        }
+
+        //Send to x.picture.topic topic exchange
+        for (int i = 0; i < 20; i++) {
+            Picture picture = Picture.builder()
+                    .name("Picture " + i)
+                    .size(ThreadLocalRandom.current().nextLong(1, 10001))
+                    .source(SOURCES.get(i % SOURCES.size()))
+                    .type(TYPES.get(i % TYPES.size()))
+                    .build();
+            pictureTopicProducer.sendMessage(picture);
         }
     }
 }
