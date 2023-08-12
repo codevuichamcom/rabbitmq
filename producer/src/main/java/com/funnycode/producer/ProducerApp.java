@@ -15,6 +15,7 @@ import java.time.LocalDate;
 @RequiredArgsConstructor
 public class ProducerApp implements CommandLineRunner {
     EmployeeJsonProducer employeeJsonProducer;
+    HumanResourceProducer humanResourceProducer;
 
     public static void main(String[] args) {
         SpringApplication.run(ProducerApp.class, args);
@@ -22,13 +23,24 @@ public class ProducerApp implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
+        //Send to employee queue
         for (int i = 0; i < 5; i++) {
             Employee e = Employee.builder()
-                    .employeeId("emp"+i)
-                    .name("Employee"+i)
+                    .employeeId("emp" + i)
+                    .name("Employee" + i)
                     .birthDate(LocalDate.now())
                     .build();
             employeeJsonProducer.sendMessage(e);
+        }
+
+        //Send to x.hr exchange
+        for (int i = 0; i < 5; i++) {
+            Employee e = Employee.builder()
+                    .employeeId("emp" + i)
+                    .name("Employee" + i)
+                    .birthDate(LocalDate.now())
+                    .build();
+            humanResourceProducer.sendMessage(e);
         }
     }
 }

@@ -10,11 +10,11 @@ import java.io.IOException;
 
 @Service
 @Slf4j
-public class EmployeeJsonConsumer {
+public class AccountingConsumer {
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
-    @RabbitListener(queues = "course.employee")
+    @RabbitListener(queues = "q.hr.accounting")
     public void listen(String message) {
         Employee emp = null;
 
@@ -24,6 +24,6 @@ public class EmployeeJsonConsumer {
             e.printStackTrace();
         }
 
-        log.info("[Employee json consumer] - Employee is {}", emp);
+        log.info("[Accounting consumer] - Employee is {}", emp);
     }
 }
