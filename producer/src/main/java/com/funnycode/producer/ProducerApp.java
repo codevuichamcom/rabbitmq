@@ -21,6 +21,7 @@ public class ProducerApp implements CommandLineRunner {
     HumanResourceProducer humanResourceProducer;
     PictureProducer pictureProducer;
     PictureTopicProducer pictureTopicProducer;
+    MyPictureProducer myPictureProducer;
 
     private final List<String> SOURCES = List.of("mobile", "web");
 
@@ -72,6 +73,18 @@ public class ProducerApp implements CommandLineRunner {
                     .type(TYPES.get(i % TYPES.size()))
                     .build();
             pictureTopicProducer.sendMessage(picture);
+        }
+
+        //Send to x.my.picture fanout exchange
+        //If Consumer has error then route to x.my.picture.dlx dead letter exchange
+        for (int i = 0; i < 15; i++) {
+            Picture picture = Picture.builder()
+                    .name("Picture " + i)
+                    .size(ThreadLocalRandom.current().nextLong(9001, 10001))
+                    .source(SOURCES.get(i % SOURCES.size()))
+                    .type(TYPES.get(i % TYPES.size()))
+                    .build();
+            myPictureProducer.sendMessage(picture);
         }
     }
 }
